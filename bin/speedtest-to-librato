@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+# Based on https://gist.github.com/apeckham/60a2c8e648d89a44c7af
+
+require "librato/metrics"
+
+SERVER_ID = 2947 # NYC-based server
+
+results = `speedtest-cli --server #{SERVER_ID}`
+ping, download, upload = results.scan(/\d+\.\d+(?= Mbit| ms)/)
+
+puts "Ping: #{ping}, DL: #{download}, UL: #{upload}"
+
+Librato::Metrics.authenticate(ENV.fetch("LIBRATO_EMAIL"), ENV.fetch("LIBRATO_API_KEY"))
+Librato::Metrics.submit(
+  "office.speedtest.ping" => ping,
+  "office.speedtest.download" => download,
+  "office.speedtest.upload" => upload,
+)
