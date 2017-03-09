@@ -1,12 +1,10 @@
-FROM ruby:2.3-alpine
+FROM knjcode/rpi-ruby
 
 WORKDIR /app
 
-RUN apk add --update python python-dev py-pip build-base && \
-    pip install speedtest-cli && \
-    rm -rf /var/cache/apk/*
-
-COPY files /
+RUN apt-get update && \
+    apt-get install -y python-pip && \
+    pip install speedtest-cli
 
 COPY Gemfile* /app/
 
@@ -14,4 +12,4 @@ RUN bundle install
 
 COPY . /app
 
-CMD crond -f -L /dev/stdout
+CMD /app/bin/speedtest-to-librato
