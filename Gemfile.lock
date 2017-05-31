@@ -4,16 +4,22 @@ GEM
     aggregate (0.2.2)
     faraday (0.11.0)
       multipart-post (>= 1.2, < 3)
+    httparty (0.14.0)
+      multi_xml (>= 0.5.2)
     librato-metrics (2.1.0)
       aggregate (~> 0.2.2)
       faraday
+    multi_xml (0.6.0)
     multipart-post (2.0.0)
+    speedtest (0.2.3)
+      httparty (~> 0.13)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   librato-metrics
+  speedtest
 
 BUNDLED WITH
    1.13.7

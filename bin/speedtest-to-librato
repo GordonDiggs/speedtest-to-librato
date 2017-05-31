@@ -1,24 +1,24 @@
 #!/usr/bin/env ruby
-# Based on https://gist.github.com/apeckham/60a2c8e648d89a44c7af
-
 require "librato/metrics"
-
-SERVER_ID = 2947 # NYC-based server
+require "speedtest"
 
 Librato::Metrics.authenticate(ENV.fetch("LIBRATO_EMAIL"), ENV.fetch("LIBRATO_API_KEY"))
 
 loop do
-  results = `speedtest-cli --server #{SERVER_ID}`
-  ping, download, upload = results.scan(/\d+\.\d+(?= Mbit| ms)/)
+  begin
+    results = Speedtest::Test.new.run
 
-  puts "Ping: #{ping}, DL: #{download}, UL: #{upload}"
+    puts "Ping: #{results.latency.round(2)}, DL: #{results.download_rate.round(2)}, UL: #{results.upload_rate.round(2)}"
 
-  Librato::Metrics.submit(
-    "office.speedtest.ping" => ping,
-    "office.speedtest.download" => download,
-    "office.speedtest.upload" => upload,
-  )
+    Librato::Metrics.submit(
+      "office.speedtest.ping" => results.latency,
+      "office.speedtest.download" => results.download_rate,
+      "office.speedtest.upload" => results.upload_rate,
+    )
 
-  puts "sleeping"
-  sleep 60
+    puts "sleeping"
+    sleep 60
+  rescue => e
+    warn "!!! Caught error: #{e}"
+  end
 end
